@@ -29,6 +29,20 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditInstanceOnly, Category = "AI")
+	bool bIsPatroling;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditConditon=bIsPatroling))
+	AActor* FirstPatrolPoint;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditConditon= bIsPatroling))
+	AActor* SecondPatrolPoint;
+
+	AActor* CurrentPatrolPoint;
+
+	void MoveToNextPatrolPoint();
+
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;
 
