@@ -25,6 +25,8 @@ AFPSObjectiveActor::AFPSObjectiveActor()
 
 	SphereComp->SetupAttachment(MeshComp);
 
+	SetReplicates(true);
+
 
 }
 
@@ -56,12 +58,17 @@ void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	PlayEffects();
 
-	AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
-	if (MyCharacter)
+	if (Role == ROLE_Authority)
 	{
-		MyCharacter->IsCarryingObjective = true;
+		AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
+		if (MyCharacter)
+		{
+			MyCharacter->IsCarryingObjective = true;
 
-		Destroy();
+			Destroy();
+		}
 	}
+
+	
 }
 
