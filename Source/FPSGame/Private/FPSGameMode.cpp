@@ -5,6 +5,7 @@
 #include "FPSCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "FPSGameState.h"
 
 AFPSGameMode::AFPSGameMode()
 {
@@ -14,16 +15,15 @@ AFPSGameMode::AFPSGameMode()
 
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
+
+	GameStateClass = AFPSGameState::StaticClass();
 }
 
 void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 {
 	if (InstigatorPawn)
 	{
-		InstigatorPawn->DisableInput(nullptr);
-
 	
-
 		if (SpectatingViewportClass)
 		{
 			TArray<AActor*> ReturnedActors;
@@ -38,12 +38,20 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 				{
 					PC->SetViewTargetWithBlend(NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
 				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("SpectatingViewport class is nullptr. Please update game mode."))
-				}
+				
 			}
 		}
-		OnMissionCompleted(InstigatorPawn, bMissionSuccess);
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SpectatingViewport class is nullptr. Please update game mode."))
+		}
+		
 	}
+
+	AFPSGameState* GS = GetGameState<AFPSGameState>();
+	if (GS)
+	{
+		GS->MulticastOnMissionComplete(InstigatorPawn, bMissionSuccess);
+	}
+	OnMissionCompleted(InstigatorPawn, bMissionSuccess);
 }
