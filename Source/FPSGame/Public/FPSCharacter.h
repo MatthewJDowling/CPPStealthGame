@@ -52,7 +52,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
 	UAnimSequence* FireAnimation;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
+	UPROPERTY(Replicated,BlueprintReadOnly, Category = "Gameplay")
 		bool IsCarryingObjective;
 
 protected:
@@ -72,6 +72,9 @@ protected:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 		void ServerFire();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifeTimeProps) const;
+
 
 public:
 	/** Returns Mesh1P subobject **/

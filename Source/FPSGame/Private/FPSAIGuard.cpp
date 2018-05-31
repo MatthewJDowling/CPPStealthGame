@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "AI/Navigation/NavigationSystem.h"
 #include "Net/UnrealNetwork.h"
+#include "Classes/AIController.h"
 
 
 
@@ -20,7 +21,7 @@ AFPSAIGuard::AFPSAIGuard()
 	GuardState = EAIState::Idle;
 
 	
-
+	AIControllerClass = AAIController::StaticClass();
 
 }
 
@@ -33,6 +34,8 @@ void AFPSAIGuard::BeginPlay()
 	PawnSensingComp->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnNoiseHeard);
 
 	OriginalRotation = GetActorRotation();
+
+	
 
 	if (bIsPatroling)
 	{
@@ -122,13 +125,27 @@ void AFPSAIGuard::ResetOrientation()
 	}
 }
 
+void AFPSAIGuard::OnRep_GuardState()
+{
+	OnStateChanged(GuardState);
+}
+
 void AFPSAIGuard::SetGuardState(EAIState NewState)
 {
 	if (GuardState == NewState)
 		return;
-	GuardState = NewState;
 
-	OnStateChanged(GuardState);
+	GuardState = NewState;
+	OnRep_GuardState();
+
+	
+}
+
+void AFPSAIGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFPSAIGuard, GuardState);
 }
 
 // Called every frame
