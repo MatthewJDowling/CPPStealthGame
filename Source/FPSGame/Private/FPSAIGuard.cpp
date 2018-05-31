@@ -5,8 +5,8 @@
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
 #include "AI/Navigation/NavigationSystem.h"
-#include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
+
 
 
 // Sets default values
@@ -122,19 +122,13 @@ void AFPSAIGuard::ResetOrientation()
 	}
 }
 
-void AFPSAIGuard::OnRep_GuardState()
-{
-	OnStateChanged(GuardState);
-
-}
-
 void AFPSAIGuard::SetGuardState(EAIState NewState)
 {
 	if (GuardState == NewState)
 		return;
 	GuardState = NewState;
-	OnRep_GuardState();
 
+	OnStateChanged(GuardState);
 }
 
 // Called every frame
@@ -154,12 +148,5 @@ void AFPSAIGuard::Tick(float DeltaTime)
 		}
 	}
 
-}
-
-void AFPSAIGuard::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AFPSAIGuard, GuardState);
 }
 
